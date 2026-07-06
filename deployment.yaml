@@ -16,9 +16,14 @@ spec:
         app: myapp
     spec:
       containers:
-      - image: mahammadalii12/observe:v2
+      - image: mahammadalii12/observe:v3
+        imagePullPolicy: Always
         name: observe
         env:
+        - name: OTEL_SERVICE_NAME
+          value: observe
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: service.name=observe
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: http://otel-collector.default.svc.cluster.local:4317
         - name: OTEL_EXPORTER_OTLP_INSECURE

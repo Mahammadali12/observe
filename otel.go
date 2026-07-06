@@ -11,10 +11,12 @@ import (
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	// "go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	// "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -82,7 +84,32 @@ func newPropagator() propagation.TextMapPropagator {
 	)
 }
 
+func newResource(ctx context.Context) (*resource.Resource, error) {
+	envResource, err := resource.New(ctx, resource.WithFromEnv())
+	if err != nil {
+		return nil, err
+	}
+
+	merged, err := resource.Merge(resource.Default(), envResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return resource.Merge(
+		merged,
+		resource.NewWithAttributes(
+			"",
+			attribute.String("service.name", "observe"),
+		),
+	)
+}
+
 func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
+	res, err := newResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	traceExporter, err := otlptracegrpc.New(ctx) //ctx?
 	// traceExporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
@@ -90,6 +117,7 @@ func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
 	}
 
 	tracerProvider := trace.NewTracerProvider(
+		trace.WithResource(res),
 		trace.WithBatcher(traceExporter,
 			// Default is 5s. Set to 1s for demonstrative purposes.
 			trace.WithBatchTimeout(time.Second)),
@@ -98,7 +126,11 @@ func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
 }
 
 func newMeterProvider(ctx context.Context) (*metric.MeterProvider, error) {
-	
+	res, err := newResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	metricExporter, err := otlpmetricgrpc.New(ctx) // ctx?
 	// metricExporter, err := stdoutmetric.New(stdoutmetric.WithPrettyPrint())
 	if err != nil {
@@ -106,6 +138,7 @@ func newMeterProvider(ctx context.Context) (*metric.MeterProvider, error) {
 	}
 
 	meterProvider := metric.NewMeterProvider(
+		metric.WithResource(res),
 		metric.WithReader(metric.NewPeriodicReader(metricExporter,
 			// Default is 1m. Set to 3s for demonstrative purposes.
 			metric.WithInterval(3*time.Second))),

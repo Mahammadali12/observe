@@ -34,6 +34,9 @@ spec:
         - name: otlp-http
           containerPort: 4318
           protocol: TCP
+        - name: prometheus
+          containerPort: 8889
+          protocol: TCP
         volumeMounts:
         - name: otel-collector-config
           mountPath: /etc/otelcol-contrib/

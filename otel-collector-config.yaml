@@ -12,17 +12,21 @@ processors:
 exporters:
   debug:
     verbosity: detailed
+  otlphttp/victoriatraces:
+    traces_endpoint: http://victoria-traces.default.svc.cluster.local:10428/insert/opentelemetry/v1/traces
+  prometheus:
+    endpoint: 0.0.0.0:8889
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, otlphttp/victoriatraces]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, prometheus]
     logs:
       receivers: [otlp]
       processors: [batch]

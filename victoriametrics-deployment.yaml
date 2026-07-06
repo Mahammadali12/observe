@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: victoria-metrics
+  namespace: default
+  labels:
+    app: victoria-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: victoria-metrics
+  template:
+    metadata:
+      labels:
+        app: victoria-metrics
+    spec:
+      containers:
+      - name: victoria-metrics
+        image: victoriametrics/victoria-metrics:latest
+        args:
+        - -promscrape.config=/etc/victoria-metrics/scrape.yml
+        - -storageDataPath=/vm-data
+        - -retentionPeriod=7d
+        ports:
+        - name: http
+          containerPort: 8428
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        volumeMounts:
+        - name: scrape-config
+          mountPath: /etc/victoria-metrics/
+          readOnly: true
+        - name: vm-data
+          mountPath: /vm-data
+      volumes:
+      - name: scrape-config
+        configMap:
+          name: victoria-metrics-scrape-config
+          items:
+          - key: scrape.yml
+            path: scrape.yml
+      - name: vm-data
+        persistentVolumeClaim:
+          claimName: victoria-metrics-data
