@@ -10,14 +10,24 @@ This setup is intentionally simple for learning:
 
 All manifests use the `default` namespace.
 
+Workspace layout:
+
+- `k8s/app/` for the application Deployment and Service
+- `k8s/collector/` for OpenTelemetry Collector manifests
+- `configs/collector/` for the raw OpenTelemetry Collector config file
+- `k8s/grafana/` for Grafana provisioning manifests
+- `k8s/victoria-metrics/` for VictoriaMetrics manifests
+- `k8s/victoria-traces/` for VictoriaTraces manifests
+- `dashboards/` for the exported dashboard JSON files
+
 ## 1. Deploy VictoriaTraces First
 
 Apply only VictoriaTraces before changing the Collector. This proves trace storage is alive before anything sends data to it.
 
 ```bash
-kubectl apply -f victoriatraces-pvc.yaml
-kubectl apply -f victoriatraces-deployment.yaml
-kubectl apply -f victoriatraces-service.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-pvc.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-deployment.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-service.yaml
 ```
 
 Check the resources:
@@ -77,10 +87,10 @@ If you already created the old `/mnt/data` PV/PVC and the pod is failing, recrea
 kubectl delete deployment victoria-traces -n default
 kubectl delete pvc victoria-traces-data -n default
 kubectl delete pv victoria-traces-pv
-kubectl apply -f victoriatraces-pv.yaml
-kubectl apply -f victoriatraces-pvc.yaml
-kubectl apply -f victoriatraces-deployment.yaml
-kubectl apply -f victoriatraces-service.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-pv.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-pvc.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-deployment.yaml
+kubectl apply -f k8s/victoria-traces/victoriatraces-service.yaml
 ```
 
 ## 2. Rebuild Your App With service.name
@@ -106,10 +116,10 @@ docker build -t <your-dockerhub-user>/<your-image>:<tag> .
 docker push <your-dockerhub-user>/<your-image>:<tag>
 ```
 
-If you changed the image tag, update `deployment.yaml`, then deploy:
+If you changed the image tag, update `k8s/app/deployment.yaml`, then deploy:
 
 ```bash
-kubectl apply -f deployment.yaml
+kubectl apply -f k8s/app/deployment.yaml
 kubectl rollout status deployment/myapp -n default
 ```
 
@@ -131,15 +141,15 @@ The Collector now:
 Run a Kubernetes dry run first:
 
 ```bash
-kubectl apply --dry-run=client -f otel-collector-configmap.yaml -f otel-collector-deployment.yaml -f otel-collector-service.yaml
+kubectl apply --dry-run=client -f k8s/collector/otel-collector-configmap.yaml -f k8s/collector/otel-collector-deployment.yaml -f k8s/collector/otel-collector-service.yaml
 ```
 
 Apply the Collector changes:
 
 ```bash
-kubectl apply -f otel-collector-configmap.yaml
-kubectl apply -f otel-collector-deployment.yaml
-kubectl apply -f otel-collector-service.yaml
+kubectl apply -f k8s/collector/otel-collector-configmap.yaml
+kubectl apply -f k8s/collector/otel-collector-deployment.yaml
+kubectl apply -f k8s/collector/otel-collector-service.yaml
 kubectl rollout restart deployment/otel-collector -n default
 kubectl rollout status deployment/otel-collector -n default
 ```
@@ -209,7 +219,7 @@ Expected:
 If `observe` does not appear:
 
 - Confirm you rebuilt and redeployed the app image after the `service.name` change.
-- Confirm `deployment.yaml` points at the exact pushed image, currently `mahammadalii12/observe:v2`.
+- Confirm `k8s/app/deployment.yaml` points at the exact pushed image, currently `mahammadalii12/observe:v3`.
 - Confirm the running pod uses the new image:
   ```bash
   kubectl describe pod -l app=myapp -n default
@@ -221,56 +231,61 @@ If `observe` does not appear:
 - Check Collector logs for export errors.
 - Generate traffic again and retry the query.
 
-## 5. Deploy VictoriaMetrics
+## 6. Deploy Grafana
 
-VictoriaMetrics uses Prometheus-compatible scrape config in `victoriametrics-scrape-configmap.yaml`. It scrapes:
+Grafana uses file provisioning so the dashboard folder appears automatically in the UI as `Infrastructure`.
 
-```text
-otel-collector.default.svc.cluster.local:8889
-```
-
-Apply it:
+Apply the Grafana provisioning ConfigMaps first, then the deployment:
 
 ```bash
-kubectl apply -f victoriametrics-scrape-configmap.yaml
-kubectl apply -f victoriametrics-pvc.yaml
-kubectl apply -f victoriametrics-deployment.yaml
-kubectl apply -f victoriametrics-service.yaml
-kubectl rollout status deployment/victoria-metrics -n default
+kubectl apply -f k8s/grafana/grafana-datasource.yaml
+kubectl apply -f k8s/grafana/grafana-dashboards-provider.yaml
+kubectl apply -f k8s/grafana/grafana.yaml
+kubectl rollout restart deployment/grafana -n default
+kubectl rollout status deployment/grafana -n default
 ```
 
-Check resources:
+Check the resources:
 
 ```bash
-kubectl get pvc victoria-metrics-data -n default
-kubectl get pods -l app=victoria-metrics -n default
-kubectl get svc victoria-metrics -n default
+kubectl get pvc grafana-pvc -n default
+kubectl get pods -l app=grafana -n default
+kubectl get svc grafana -n default
 ```
 
 Expected shape:
 
 ```text
-victoria-metrics-data   Bound    ...
-victoria-metrics-...    1/1      Running
-victoria-metrics        ClusterIP ... 8428/TCP
+grafana-pvc   Bound    ...
+grafana-...    1/1      Running
+grafana       LoadBalancer ... 3000/TCP
 ```
 
-Port-forward:
+If the `Infrastructure` folder does not appear, the usual causes are:
+
+- `k8s/grafana/grafana-dashboards-provider.yaml` was not applied, so Grafana never got the file provider pointing at `/var/lib/grafana/dashboards`.
+- `k8s/grafana/grafana-datasource.yaml` was not applied, or the Grafana deployment was not restarted after the datasource ConfigMap changed.
+- `k8s/grafana/grafana.yaml` was not restarted after the ConfigMaps were updated.
+- The dashboard JSON files are missing from the mounted ConfigMaps.
+
+Note: `VictoriaMetrics` is still the datasource display name. The dashboard now exposes a Grafana datasource dropdown named `datasource`, so you can switch it to another Prometheus-compatible datasource later without editing the panels.
+
+You can verify the provider is loaded by checking the Grafana pod logs and the mounted files:
 
 ```bash
-kubectl port-forward -n default svc/victoria-metrics 8428:8428
+kubectl logs deployment/grafana -n default
+kubectl exec deployment/grafana -n default -- ls -R /var/lib/grafana/dashboards
 ```
-
-Check scrape targets:
-
-```bash
 curl localhost:8428/targets
 ```
 
 Expected:
 
 - Target `otel-collector.default.svc.cluster.local:8889`
+- Target `victoria-metrics.default.svc.cluster.local:8428`
 - Health/up status after the first scrape
+
+The VictoriaMetrics dashboard depends on the `victoria-metrics` scrape job because that is where the `vm_*`, `go_*`, and `vm_app_version` series come from.
 
 Generate more app traffic:
 
@@ -299,8 +314,8 @@ The OpenTelemetry Collector's Prometheus exporter normalizes metric names, so th
 Delete only the Victoria components:
 
 ```bash
-kubectl delete -f victoriametrics-service.yaml -f victoriametrics-deployment.yaml -f victoriametrics-pvc.yaml -f victoriametrics-scrape-configmap.yaml
-kubectl delete -f victoriatraces-service.yaml -f victoriatraces-deployment.yaml -f victoriatraces-pvc.yaml
+kubectl delete -f k8s/victoria-metrics/victoriametrics-service.yaml -f k8s/victoria-metrics/victoriametrics-deployment.yaml -f k8s/victoria-metrics/victoriametrics-pvc.yaml -f k8s/victoria-metrics/victoriametrics-scrape-configmap.yaml
+kubectl delete -f k8s/victoria-traces/victoriatraces-service.yaml -f k8s/victoria-traces/victoriatraces-deployment.yaml -f k8s/victoria-traces/victoriatraces-pvc.yaml
 ```
 
 This deletes the PVCs too, so stored metrics and traces are removed.

@@ -10,3 +10,7 @@ data:
       static_configs:
       - targets:
         - otel-collector.default.svc.cluster.local:8889
+    - job_name: victoria-metrics
+      static_configs:
+      - targets:
+        - victoria-metrics.default.svc.cluster.local:8428
