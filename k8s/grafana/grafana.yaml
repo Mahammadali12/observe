@@ -82,12 +82,8 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
             - name: dashboard-provider
               mountPath: /etc/grafana/provisioning/dashboards
-            - name: otel-dash-vol
-              mountPath: /var/lib/grafana-dashboards/otel-collector.json
-              subPath: otel-collector.json
-            - name: vm-dash-vol
-              mountPath: /var/lib/grafana-dashboards/victoria-metrics.json
-              subPath: victoria-metrics.json
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
             - name: grafana-pv
               mountPath: /var/lib/grafana
       volumes:
@@ -100,12 +96,13 @@ spec:
         - name: dashboard-provider
           configMap:
             name: grafana-dashboards-provider
-        - name: otel-dash-vol
-          configMap:
-            name: otel-collector-dashboard
-        - name: vm-dash-vol
-          configMap:
-            name: victoria-metrics-dashboard
+        - name: dashboards
+          projected:
+            sources:
+              - configMap:
+                  name: otel-collector-dashboard
+              - configMap:
+                  name: victoria-metrics-dashboard
 ---
 apiVersion: v1
 kind: Service

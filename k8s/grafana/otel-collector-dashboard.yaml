@@ -1,41 +1,36 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-dashboard
+  namespace: default
 data:
   otel-collector.json: |-
     {
-      "__inputs": [
-        {
-          "name": "DS_CLOUDFLARE-GRAPHQL",
-          "label": "cloudflare-graphql",
-          "description": "Plugin for using graphQL",
-          "type": "datasource",
-          "pluginId": "yesoreyeram-infinity-datasource",
-          "pluginName": "Infinity"
-        }
-      ],
-      "__elements": {},
+      "__inputs": [],
+      "__elements": [],
       "__requires": [
-        {
-          "type": "panel",
-          "id": "bargauge",
-          "name": "Bar gauge",
-          "version": ""
-        },
-        {
-          "type": "panel",
-          "id": "geomap",
-          "name": "Geomap",
-          "version": ""
-        },
         {
           "type": "grafana",
           "id": "grafana",
           "name": "Grafana",
-          "version": "10.4.2"
+          "version": "8.3.5"
+        },
+        {
+          "type": "datasource",
+          "id": "influxdb",
+          "name": "InfluxDB",
+          "version": "1.0.0"
+        },
+        {
+          "type": "datasource",
+          "id": "prometheus",
+          "name": "Prometheus",
+          "version": "1.0.0"
         },
         {
           "type": "panel",
-          "id": "stat",
-          "name": "Stat",
+          "id": "text",
+          "name": "Text",
           "version": ""
         },
         {
@@ -43,22 +38,13 @@ data:
           "id": "timeseries",
           "name": "Time series",
           "version": ""
-        },
-        {
-          "type": "datasource",
-          "id": "yesoreyeram-infinity-datasource",
-          "name": "Infinity",
-          "version": "2.6.0"
         }
       ],
       "annotations": {
         "list": [
           {
             "builtIn": 1,
-            "datasource": {
-              "type": "grafana",
-              "uid": "-- Grafana --"
-            },
+            "datasource": "-- Grafana --",
             "enable": true,
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
@@ -73,372 +59,45 @@ data:
           }
         ]
       },
-      "description": "Cloudflare Account Analytics Dashboard",
+      "description": "Visualize OTEL telemetry metrics (tested with AWS OTEL/ADOT v0.17.0 = OTEL v0.45.0)",
       "editable": true,
       "fiscalYearStartMonth": 0,
-      "gnetId": 21367,
-      "graphTooltip": 2,
+      "gnetId": 15983,
+      "graphTooltip": 1,
       "id": null,
+      "iteration": 1649138665631,
       "links": [],
       "liveNow": false,
       "panels": [
         {
+          "collapsed": false,
           "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
+            "type": "prometheus",
+            "uid": "$datasource"
           },
           "gridPos": {
-            "h": 5,
-            "w": 6,
+            "h": 1,
+            "w": 24,
             "x": 0,
             "y": 0
           },
-          "id": 43,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Requests",
-          "transparent": true,
-          "type": "stat"
+          "id": 23,
+          "panels": [],
+          "title": "Receivers",
+          "type": "row"
         },
         {
           "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
+            "type": "prometheus",
+            "uid": "$datasource"
           },
           "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 0
-          },
-          "id": 44,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.bytes",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { bytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Bandwidth",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 0
-          },
-          "id": 45,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.visits",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { visits }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Visits",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 0
-          },
-          "id": 46,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.pageViews",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { pageViews }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Page Views",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -450,15 +109,14 @@ data:
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "auto",
-                "spanNulls": false,
+                "showPoints": "never",
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -467,464 +125,616 @@ data:
                   "mode": "off"
                 }
               },
+              "links": [],
               "mappings": [],
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 6,
-            "x": 0,
-            "y": 5
-          },
-          "id": 47,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.datetimeHour",
-                  "text": "",
-                  "type": "timestamp"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [datetimeHour_ASC]) {\n        dimensions { datetimeHour }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Requests",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 6,
-            "x": 6,
-            "y": 5
-          },
-          "id": 48,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.bytes",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.datetimeHour",
-                  "text": "",
-                  "type": "timestamp"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [datetimeHour_ASC]) {\n        dimensions { datetimeHour }\n        sum { bytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Bandwith",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 6,
-            "x": 12,
-            "y": 5
-          },
-          "id": 49,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.visits",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.datetimeHour",
-                  "text": "",
-                  "type": "timestamp"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [datetimeHour_ASC]) {\n        dimensions { datetimeHour }\n        sum { visits }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Visits",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 6,
-            "x": 18,
-            "y": 5
-          },
-          "id": 50,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.pageViews",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.datetimeHour",
-                  "text": "",
-                  "type": "timestamp"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [datetimeHour_ASC]) {\n        dimensions { datetimeHour }\n        sum { pageViews }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Page Views",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
                 "steps": [
                   {
                     "color": "green",
                     "value": null
                   },
                   {
-                    "color": "#EAB839",
-                    "value": 30
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Refused.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 28,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_receiver_accepted_spans{receiver=~\"$receiver\"}[$__rate_interval])) by (receiver)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Accepted rate: {{receiver}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_receiver_refused_spans{receiver=~\"$receiver\"}[$__rate_interval])) by (receiver)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Refused rate: {{receiver}}",
+              "refId": "B"
+            }
+          ],
+          "title": "Spans Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Refused.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 32,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_receiver_accepted_metric_points{receiver=~\"$receiver\"}[$__rate_interval])) by (receiver)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Accepted rate: {{receiver}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_receiver_refused_metric_points{receiver=~\"$receiver\"}[$__rate_interval])) by (receiver)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Refused rate: {{receiver}}",
+              "refId": "B"
+            }
+          ],
+          "title": "Metric Points Rate",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 10
+          },
+          "id": 34,
+          "panels": [],
+          "title": "Processors",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Refused.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Dropped.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "purple",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 11
+          },
+          "id": 35,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_processor_accepted_spans{processor=~\"$processor\"}[$__rate_interval])) by (processor)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Accepted rate: {{processor}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_processor_refused_spans{processor=~\"$processor\"}[$__rate_interval])) by (processor)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Refused rate: {{processor}}",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_processor_dropped_spans{processor=~\"$processor\"}[$__interval])) by (processor)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Dropped rate: {{processor}}",
+              "refId": "C"
+            }
+          ],
+          "title": "Spans Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Refused.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Dropped.*/"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "purple",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 11
+          },
+          "id": 36,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_processor_batch_batch_send_size_count{processor=~\"$processor\"}[$__rate_interval])) by (processor)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Batch send size count: {{processor}}",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_processor_batch_batch_send_size_sum{processor=~\"$processor\"}[$__rate_interval])) by (processor)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Batch send size sum: {{processor}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Batch metrics",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 25,
+          "panels": [],
+          "title": "Exporters",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -937,1407 +747,113 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 17,
-            "w": 14,
+            "h": 9,
+            "w": 12,
             "x": 0,
-            "y": 12
+            "y": 21
           },
-          "id": 51,
+          "id": 37,
+          "interval": "",
+          "links": [],
           "options": {
-            "basemap": {
-              "config": {},
-              "name": "Layer 0",
-              "type": "default"
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
             },
-            "controls": {
-              "mouseWheelZoom": true,
-              "showAttribution": true,
-              "showDebug": false,
-              "showMeasure": false,
-              "showScale": false,
-              "showZoom": true
-            },
-            "layers": [
-              {
-                "config": {
-                  "showLegend": true,
-                  "style": {
-                    "color": {
-                      "field": "sum.requests",
-                      "fixed": "dark-green"
-                    },
-                    "opacity": 0.4,
-                    "rotation": {
-                      "fixed": 0,
-                      "max": 360,
-                      "min": -360,
-                      "mode": "mod"
-                    },
-                    "size": {
-                      "field": "sum.requests",
-                      "fixed": 5,
-                      "max": 15,
-                      "min": 2
-                    },
-                    "symbol": {
-                      "fixed": "img/icons/marker/circle.svg",
-                      "mode": "fixed"
-                    },
-                    "symbolAlign": {
-                      "horizontal": "center",
-                      "vertical": "center"
-                    },
-                    "textConfig": {
-                      "fontSize": 12,
-                      "offsetX": 0,
-                      "offsetY": 0,
-                      "textAlign": "center",
-                      "textBaseline": "middle"
-                    }
-                  }
-                },
-                "filterData": {
-                  "id": "byRefId",
-                  "options": "A"
-                },
-                "location": {
-                  "lookup": "dimensions.clientCountryName",
-                  "mode": "lookup"
-                },
-                "name": "Layer 1",
-                "tooltip": true,
-                "type": "markers"
-              }
-            ],
             "tooltip": {
-              "mode": "details"
-            },
-            "view": {
-              "allLayers": true,
-              "id": "coords",
-              "lat": 22.299077,
-              "lon": 28.648308,
-              "zoom": 2
+              "mode": "multi"
             }
           },
-          "pluginVersion": "10.4.2",
+          "pluginVersion": "8.3.5",
           "targets": [
             {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_exporter_sent_spans{exporter=~\"$exporter\"}[$__rate_interval])) by (exporter)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Sent spans rate: {{exporter}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_exporter_enqueue_failed_spans{exporter=~\"$exporter\"}[$__rate_interval])) by (exporter)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Enqueue failed spans rate: {{exporter}}",
+              "refId": "B"
+            }
+          ],
+          "title": "Spans Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
                 },
-                {
-                  "selector": "dimensions.clientCountryName",
-                  "text": "",
-                  "type": "string"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        dimensions { clientCountryName }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Country",
-          "transparent": true,
-          "type": "geomap"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 17,
-            "w": 7,
-            "x": 14,
-            "y": 12
-          },
-          "id": 52,
-          "options": {
-            "displayMode": "gradient",
-            "maxVizHeight": 300,
-            "minVizHeight": 16,
-            "minVizWidth": 8,
-            "namePlacement": "left",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "limit": 10,
-              "values": true
-            },
-            "showUnfilled": true,
-            "sizing": "manual",
-            "valueMode": "color"
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
                 },
-                {
-                  "selector": "dimensions.clientCountryName",
-                  "text": "",
-                  "type": "string"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "summarizeExpression": "",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [sum_requests_DESC]) {\n        dimensions { clientCountryName }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Requests by country",
-          "transparent": true,
-          "type": "bargauge"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 17,
-            "w": 3,
-            "x": 21,
-            "y": 12
-          },
-          "id": 53,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "limit": 10,
-              "values": true
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.bytes",
-                  "text": "",
-                  "type": "number"
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
                 },
-                {
-                  "selector": "dimensions.clientCountryName",
-                  "text": "",
-                  "type": "string"
+                "thresholdsStyle": {
+                  "mode": "off"
                 }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
               },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "summarizeExpression": "",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [sum_requests_DESC]) {\n        dimensions { clientCountryName }\n        sum { bytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Bandwith by country",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 29
-          },
-          "id": 33,
-          "panels": [],
-          "title": "Security",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
+              "links": [],
               "mappings": [],
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
                     "color": "green",
                     "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 30
-          },
-          "id": 54,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n          clientSSLProtocol_neq: \"none\"\n        } limit: 10000) {\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Encrypted Requests",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
+                  },
                   {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 30
-          },
-          "id": 56,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.encryptedRequests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { encryptedRequests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "\bEncrypted Requests Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 30
-          },
-          "id": 55,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.bytes",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n          clientSSLProtocol_neq: \"none\"\n        } limit: 10000) {\n        sum { bytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Encrypted Bandwidth",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 30
-          },
-          "id": 57,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.encryptedBytes",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { encryptedBytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "\bEncrypted Bandwidth Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 35
-          },
-          "id": 34,
-          "panels": [],
-          "title": "Cache",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 36
-          },
-          "id": 58,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.cachedRequests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { cachedRequests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Cached Requests",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 36
-          },
-          "id": 59,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.cachedRequests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { cachedRequests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "\bCached Requests Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 36
-          },
-          "id": 60,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.cachedBytes",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        sum { cachedBytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Cached Bandwidth",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 36
-          },
-          "id": 61,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.cachedBytes",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { cachedBytes }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "\bCached Requests Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 41
-          },
-          "id": 32,
-          "panels": [],
-          "title": "Errors",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 0,
-            "y": 42
-          },
-          "id": 62,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n          edgeResponseStatus_geq: 400, edgeResponseStatus_leq: 499\n        } limit: 10000) {\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "4xx Errors",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 6,
-            "y": 42
-          },
-          "id": 63,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.status4xx",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { status4xx }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "4xx Error Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "locale"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 12,
-            "y": 42
-          },
-          "id": 64,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n          edgeResponseStatus_geq: 500, edgeResponseStatus_leq: 599\n        } limit: 10000) {\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "5xx Errors",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percentunit"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 6,
-            "x": 18,
-            "y": 42
-          },
-          "id": 65,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "none",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": true
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "ratio.status5xx",
-                  "text": "",
-                  "type": "number"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000) {\n        ratio { status5xx }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "5xx Error Rate",
-          "transparent": true,
-          "type": "stat"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 47
-          },
-          "id": 36,
-          "panels": [],
-          "title": "Network",
-          "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
+                    "color": "red",
+                    "value": 80
                   }
                 ]
               },
@@ -2347,307 +863,639 @@ data:
           },
           "gridPos": {
             "h": 9,
-            "w": 8,
+            "w": 12,
+            "x": 12,
+            "y": 21
+          },
+          "id": 38,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_exporter_sent_metric_points{exporter=~\"$exporter\"}[$__rate_interval])) by (exporter)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Sent metric points: {{exporter}}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_exporter_enqueue_failed_metric_points{exporter=~\"$exporter\"}[$__rate_interval])) by (exporter)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Enqueue failed metric points rate: {{exporter}}",
+              "refId": "B"
+            }
+          ],
+          "title": "Metric Points Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 30
+          },
+          "id": 10,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "max(otelcol_exporter_queue_size{exporter=~\"$exporter\"}) by (exporter)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Max queue size: {{exporter}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Exporter Queue Size",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 21,
+          "panels": [],
+          "title": "Collector",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 39
+          },
+          "id": 39,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "sum(rate(otelcol_process_cpu_seconds{exporter=~\"$exporter\"}[$__rate_interval])) by (exporter)",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "CPU seconds rate",
+              "refId": "A"
+            }
+          ],
+          "title": "CPU Seconds Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 39
+          },
+          "id": 40,
+          "interval": "",
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.3.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$datasource"
+              },
+              "exemplar": true,
+              "expr": "avg(otelcol_process_memory_rss{})",
+              "format": "time_series",
+              "interval": "5m",
+              "intervalFactor": 1,
+              "legendFormat": "Memory RSS",
+              "refId": "A"
+            }
+          ],
+          "title": "Memory RSS",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$datasource"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
             "x": 0,
             "y": 48
           },
-          "id": 66,
+          "id": 41,
+          "interval": "",
+          "links": [],
           "options": {
-            "displayMode": "gradient",
-            "maxVizHeight": 300,
-            "minVizHeight": 16,
-            "minVizWidth": 8,
-            "namePlacement": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
+            "legend": {
               "calcs": [
-                "lastNotNull"
+                "min",
+                "max",
+                "mean"
               ],
-              "fields": "",
-              "limit": 10,
-              "values": true
+              "displayMode": "table",
+              "placement": "bottom"
             },
-            "showUnfilled": true,
-            "sizing": "manual",
-            "valueMode": "color"
+            "tooltip": {
+              "mode": "multi"
+            }
           },
-          "pluginVersion": "10.4.2",
+          "pluginVersion": "8.3.5",
           "targets": [
             {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.clientRequestHTTPProtocol",
-                  "text": "",
-                  "type": "string"
-                }
-              ],
               "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
+                "type": "prometheus",
+                "uid": "$datasource"
               },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "summarizeExpression": "",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [sum_requests_DESC]) {\n        dimensions { clientRequestHTTPProtocol }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
+              "exemplar": true,
+              "expr": "count(count(otelcol_process_cpu_seconds{service_instance_id=~\".*\"}) by (service_instance_id))",
+              "format": "time_series",
+              "hide": false,
+              "interval": "10s",
+              "intervalFactor": 1,
+              "legendFormat": "Service instance count",
+              "refId": "B"
             }
           ],
-          "title": "Client HTTP Version Used",
-          "transparent": true,
-          "type": "bargauge"
+          "title": "Service Instance Count",
+          "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
+          "datasource": {},
+          "editable": true,
+          "error": false,
           "gridPos": {
-            "h": 9,
-            "w": 8,
-            "x": 8,
-            "y": 48
+            "h": 3,
+            "w": 24,
+            "x": 0,
+            "y": 57
           },
-          "id": 67,
+          "id": 45,
+          "isNew": true,
+          "links": [],
           "options": {
-            "displayMode": "gradient",
-            "maxVizHeight": 300,
-            "minVizHeight": 16,
-            "minVizWidth": 8,
-            "namePlacement": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "limit": 10,
-              "values": true
-            },
-            "showUnfilled": true,
-            "sizing": "manual",
-            "valueMode": "color"
+            "content": "<a href=\"http://www.monitoringartist.com\" target=\"_blank\" title=\"Dashboard maintained by Monitoring Artist - DevOps / Docker / Kubernetes / AWS ECS / Google GCP / Zabbix / Zenoss / Terraform / Monitoring\"><img src=\"https://monitoringartist.github.io/monitoring-artist-logo-grafana.png\" height=\"30px\" /></a> | \n<a target=\"_blank\" href=\"https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/troubleshooting.md#metrics\">OTEL collector troubleshooting (how to enable telemetry metrics)</a> | \n<a target=\"_blank\" href=\"https://grafana.com/dashboards/15983\">Installed from Grafana.com dashboards</a>",
+            "mode": "html"
           },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.clientSSLProtocol",
-                  "text": "",
-                  "type": "string"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "summarizeExpression": "",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 10000 orderBy: [sum_requests_DESC]) {\n        dimensions { clientSSLProtocol }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Traffic Served Over SSL",
-          "transparent": true,
-          "type": "bargauge"
-        },
-        {
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-GrYlRd"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "short"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 8,
-            "x": 16,
-            "y": 48
-          },
-          "id": 68,
-          "options": {
-            "displayMode": "gradient",
-            "maxVizHeight": 300,
-            "minVizHeight": 16,
-            "minVizWidth": 8,
-            "namePlacement": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "limit": 10,
-              "values": true
-            },
-            "showUnfilled": true,
-            "sizing": "manual",
-            "valueMode": "color"
-          },
-          "pluginVersion": "10.4.2",
-          "targets": [
-            {
-              "columns": [
-                {
-                  "selector": "sum.requests",
-                  "text": "",
-                  "type": "number"
-                },
-                {
-                  "selector": "dimensions.edgeResponseContentTypeName",
-                  "text": "",
-                  "type": "string"
-                }
-              ],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "${DS_CLOUDFLARE-GRAPHQL}"
-              },
-              "filters": [],
-              "format": "table",
-              "global_query_id": "",
-              "parser": "backend",
-              "refId": "A",
-              "root_selector": "data.viewer.accounts.httpRequestsOverviewAdaptiveGroups",
-              "source": "url",
-              "summarizeExpression": "",
-              "type": "graphql",
-              "url": "https://api.cloudflare.com/client/v4/graphql",
-              "url_options": {
-                "body_content_type": "application/json",
-                "body_graphql_query": "query {\n  viewer {\n    accounts(filter: {accountTag:\"${accountTag}\"}) {\n      httpRequestsOverviewAdaptiveGroups(filter: \n        {\n          datetime_geq: \"${__from:date:YYYY-MM-DDTHH:mm:ssZ}\",datetime_leq: \"${__to:date:YYYY-MM-DDTHH:mm:ssZ}\",\n        } limit: 5 orderBy: [sum_requests_DESC]) {\n        dimensions { edgeResponseContentTypeName }\n        sum { requests }\n      }\n    }\n  }\n}",
-                "body_type": "graphql",
-                "data": "",
-                "headers": [],
-                "method": "POST",
-                "params": []
-              }
-            }
-          ],
-          "title": "Top Content Types",
-          "transparent": true,
-          "type": "bargauge"
+          "pluginVersion": "8.3.5",
+          "title": "Documentation",
+          "type": "text"
         }
       ],
       "refresh": "",
-      "schemaVersion": 39,
+      "schemaVersion": 34,
+      "style": "dark",
       "tags": [
-        "Cloudflare",
-        "GraphQL"
+        "opentelemetry",
+        "monitoringartist"
       ],
       "templating": {
         "list": [
           {
-            "current": {
-              "selected": false,
-              "text": "account_name",
-              "value": "account_id"
-            },
+            "current": {},
             "hide": 0,
             "includeAll": false,
+            "label": "Datasource",
             "multi": false,
-            "name": "accountTag",
-            "options": [
-              {
-                "selected": true,
-                "text": "account_name",
-                "value": "account_id"
-              }
-            ],
-            "query": "account_name : account_id",
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
             "queryValue": "",
+            "refresh": 1,
+            "regex": "",
             "skipUrlSync": false,
-            "type": "custom"
+            "type": "datasource"
+          },
+          {
+            "allValue": ".*",
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "$datasource"
+            },
+            "definition": "label_values(receiver)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Receiver",
+            "multi": false,
+            "name": "receiver",
+            "options": [],
+            "query": {
+              "query": "label_values(receiver)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "$datasource"
+            },
+            "definition": "label_values(processor)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Processor",
+            "multi": false,
+            "name": "processor",
+            "options": [],
+            "query": {
+              "query": "label_values(processor)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "allValue": ".*",
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "$datasource"
+            },
+            "definition": "label_values(exporter)",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Exporter",
+            "multi": false,
+            "name": "exporter",
+            "options": [],
+            "query": {
+              "query": "label_values(exporter)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "tagValuesQuery": "",
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
           }
         ]
       },
       "time": {
-        "from": "now-2d",
+        "from": "now-12h",
         "to": "now"
       },
-      "timepicker": {},
+      "timepicker": {
+        "refresh_intervals": [
+          "5s",
+          "10s",
+          "30s",
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "1d"
+        ],
+        "time_options": [
+          "5m",
+          "15m",
+          "1h",
+          "6h",
+          "12h",
+          "24h",
+          "2d",
+          "7d",
+          "30d"
+        ]
+      },
       "timezone": "",
-      "title": "Cloudflare-Account Analytics",
-      "uid": "ukV4w2J4z",
-      "version": 20,
+      "title": "AWS OpenTelemetry Collector",
+      "uid": "BKf2sowmj",
+      "version": 29,
       "weekStart": ""
     }
-kind: ConfigMap
-metadata:
-  name: otel-collector-dashboard
-  namespace: default

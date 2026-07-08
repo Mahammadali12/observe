@@ -15,7 +15,7 @@ Workspace layout:
 - `k8s/app/` for the application Deployment and Service
 - `k8s/collector/` for OpenTelemetry Collector manifests
 - `configs/collector/` for the raw OpenTelemetry Collector config file
-- `k8s/grafana/` for Grafana provisioning manifests
+- `k8s/grafana/` for Grafana provisioning manifests and dashboard JSON ConfigMaps
 - `k8s/victoria-metrics/` for VictoriaMetrics manifests
 - `k8s/victoria-traces/` for VictoriaTraces manifests
 - `dashboards/` for the exported dashboard JSON files
@@ -203,10 +203,12 @@ Expected after traffic:
   ],
   "errors": null
 }
+  otel-collector.default.svc.cluster.local:8888
 ```
 
 Query traces by service:
-
+  The VictoriaMetrics dashboard depends on the `victoria-metrics` scrape job because that is where the `vm_*`, `go_*`, and `vm_app_version` series come from.
+  The OTEL collector dashboard depends on the collector's internal telemetry job, which is exposed on `8888` and provides the `otelcol_*` series the dashboard queries.
 ```bash
 curl "localhost:10428/select/jaeger/api/traces?service=observe&limit=5"
 ```
@@ -234,6 +236,7 @@ If `observe` does not appear:
 ## 6. Deploy Grafana
 
 Grafana uses file provisioning so the dashboard folder appears automatically in the UI as `Infrastructure`.
+The dashboard JSON files are mounted into `/var/lib/grafana/dashboards` and the provider watches that same directory.
 
 Apply the Grafana provisioning ConfigMaps first, then the deployment:
 
@@ -271,11 +274,14 @@ If the `Infrastructure` folder does not appear, the usual causes are:
 Note: `VictoriaMetrics` is still the datasource display name. The dashboard now exposes a Grafana datasource dropdown named `datasource`, so you can switch it to another Prometheus-compatible datasource later without editing the panels.
 
 You can verify the provider is loaded by checking the Grafana pod logs and the mounted files:
+You can verify the provider is loaded by checking the Grafana pod logs and the mounted files:
 
 ```bash
 kubectl logs deployment/grafana -n default
 kubectl exec deployment/grafana -n default -- ls -R /var/lib/grafana/dashboards
 ```
+
+If the old Cloudflare dashboard still appears in Grafana after the file-provisioned dashboard is working, that is the previously imported dashboard preserved in Grafana's database. Remove it manually from the Grafana UI or through the Grafana API; file provisioning will not delete dashboards that were imported earlier.
 curl localhost:8428/targets
 ```
 
