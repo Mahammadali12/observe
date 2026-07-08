@@ -103,6 +103,8 @@ spec:
                   name: otel-collector-dashboard
               - configMap:
                   name: victoria-metrics-dashboard
+              - configMap:
+                  name: go-app-dashboard
 ---
 apiVersion: v1
 kind: Service
