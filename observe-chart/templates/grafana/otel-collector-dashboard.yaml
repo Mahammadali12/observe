@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-dashboard
+  namespace: default
+data:
+  otel-collector.json: {{ .Files.Get "files/otel-collector.json" | quote }}

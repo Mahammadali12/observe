@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: default
+  labels:
+    app: otel-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      containers:
+      - name: otel-collector
+        image: {{ .Values.collector.image.repository }}:{{ .Values.collector.image.tag }}
+        args:
+        - --config=/etc/otelcol-contrib/otel-collector-config.yaml
+        resources:
+          requests:
+            cpu: {{ .Values.collector.resources.requests.cpu }}
+            memory: {{ .Values.collector.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.collector.resources.limits.cpu }}
+            memory: {{ .Values.collector.resources.limits.memory }}
+        ports:
+        - name: otlp-grpc
+          containerPort: 4317
+          protocol: TCP
+        - name: otlp-http
+          containerPort: 4318
+          protocol: TCP
+        - name: prometheus
+          containerPort: 8889
+          protocol: TCP
+        volumeMounts:
+        - name: otel-collector-config
+          mountPath: /etc/otelcol-contrib/
+          readOnly: true
+      volumes:
+      - name: otel-collector-config
+        configMap:
+          name: otel-collector-config
+          items:
+          - key: otel-collector-config.yaml
+            path: otel-collector-config.yaml
