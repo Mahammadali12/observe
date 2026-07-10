@@ -21,6 +21,8 @@ data:
         verbosity: detailed
       otlphttp/victoriatraces:
         traces_endpoint: http://victoria-traces.default.svc.cluster.local:10428/insert/opentelemetry/v1/traces
+      otlphttp/victorialogs:
+        logs_endpoint: http://victoria-logs.default.svc.cluster.local:9428/insert/opentelemetry/v1/logs
       prometheus:
         endpoint: 0.0.0.0:8889
 
@@ -46,4 +48,4 @@ data:
         logs:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug]
+          exporters: [debug, otlphttp/victorialogs]
