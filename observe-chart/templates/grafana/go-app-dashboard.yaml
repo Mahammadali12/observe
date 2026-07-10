@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-dashboard
+  namespace: default
+data:
+  go-app.json: {{ .Files.Get "files/go-app.json" | quote }}

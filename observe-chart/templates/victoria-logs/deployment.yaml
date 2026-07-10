@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: victoria-logs
+  namespace: default
+  labels:
+    app: victoria-logs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: victoria-logs
+  template:
+    metadata:
+      labels:
+        app: victoria-logs
+    spec:
+      containers:
+      - name: victoria-logs
+        image: {{ .Values.victoriaLogs.image.repository }}:{{ .Values.victoriaLogs.image.tag }}
+        args:
+        - -storageDataPath=/vlogs-data
+        - -retentionPeriod={{ .Values.victoriaLogs.retentionPeriod }}
+        ports:
+        - name: http
+          containerPort: 9428
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.victoriaLogs.resources.requests.cpu }}
+            memory: {{ .Values.victoriaLogs.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.victoriaLogs.resources.limits.cpu }}
+            memory: {{ .Values.victoriaLogs.resources.limits.memory }}
+        volumeMounts:
+        - name: vlogs-data
+          mountPath: /vlogs-data
+      volumes:
+      - name: vlogs-data
+        persistentVolumeClaim:
+          claimName: victoria-logs-data
