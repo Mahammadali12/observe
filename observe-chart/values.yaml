@@ -13,7 +13,7 @@ app:
 collector:
   image:
     repository: otel/opentelemetry-collector-contrib
-    tag: v6
+    tag: latest
   resources:
     requests:
       cpu: 100m
@@ -25,7 +25,7 @@ collector:
 victoriaMetrics:
   image:
     repository: victoriametrics/victoria-metrics
-    tag: v6
+    tag: latest
   retentionPeriod: 7d
   pv:
     storage: 2Gi
@@ -40,7 +40,7 @@ victoriaMetrics:
 victoriaLogs:
   image:
     repository: victoriametrics/victoria-logs
-    tag: v6
+    tag: latest
   retentionPeriod: 7d
   pv:
     storage: 2Gi
@@ -55,7 +55,7 @@ victoriaLogs:
 victoriaTraces:
   image:
     repository: victoriametrics/victoria-traces
-    tag: v6
+    tag: v0.9.3
   retentionPeriod: 7d
   pv:
     storage: 2Gi
@@ -70,7 +70,7 @@ victoriaTraces:
 grafana:
   image:
     repository: grafana/grafana
-    tag: v6
+    tag: latest
   pv:
     storage: 1Gi
   resources:
