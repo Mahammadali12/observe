@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: victoria-traces
+  namespace: default
+  labels:
+    app: victoria-traces
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: victoria-traces
+  template:
+    metadata:
+      labels:
+        app: victoria-traces
+    spec:
+      containers:
+      - name: victoria-traces
+        image: {{ .Values.victoriaTraces.image.repository }}:{{ .Values.victoriaTraces.image.tag }}
+        args:
+        - -storageDataPath=/vt-data
+        - -retentionPeriod={{ .Values.victoriaTraces.retentionPeriod }}
+        ports:
+        - name: http
+          containerPort: 10428
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.victoriaTraces.resources.requests.cpu }}
+            memory: {{ .Values.victoriaTraces.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.victoriaTraces.resources.limits.cpu }}
+            memory: {{ .Values.victoriaTraces.resources.limits.memory }}
+        volumeMounts:
+        - name: vt-data
+          mountPath: /vt-data
+      volumes:
+      - name: vt-data
+        persistentVolumeClaim:
+          claimName: victoria-traces-data
