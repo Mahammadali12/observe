@@ -72,6 +72,9 @@ spec:
             tcpSocket:
               port: 3000
             timeoutSeconds: 1
+          env:
+          - name: GF_INSTALL_PLUGINS
+            value: victoriametrics-logs-datasource
           resources:
             requests:
               cpu: {{ .Values.grafana.resources.requests.cpu }}
