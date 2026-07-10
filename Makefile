@@ -27,7 +27,7 @@ release:
 	@echo "[3/4] Updating Helm chart source on master..."
 	sed -i 's/^    tag: .*/    tag: $(TAG)/' $(CHART_DIR)/values.yaml
 	git add $(CHART_DIR)/values.yaml
-	git commit -m 'chore: bump app image tag to $(TAG)'
+	git commit -m 'chore: bump app image tag to $(TAG)' || true
 	git push origin master
 	@echo "[4/4] Packaging and publishing chart to gh-pages..."
 	helm package $(CHART_DIR)/ --destination /tmp
