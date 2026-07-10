@@ -3,13 +3,13 @@ entries:
   observe:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-07-10T10:10:24.342662479Z"
+    created: "2026-07-10T10:27:25.906612556Z"
     description: A Helm chart for the observe observability stack (Go app, OpenTelemetry
       Collector, VictoriaMetrics, VictoriaTraces, Grafana)
-    digest: 5c39c6a5264b13c40d6b9901383bd5af3442772c1e314bd7e0118e2b04e8ba8c
+    digest: f9c292e61191580a07f579780c704dc838655dc5b3cae15bbc2114c4438e32de
     name: observe
     type: application
     urls:
     - https://mahammadali12.github.io/observe/observe-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-10T10:10:24.341762314Z"
+generated: "2026-07-10T10:27:25.905602097Z"
