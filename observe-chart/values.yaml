@@ -1,7 +1,7 @@
 app:
   image:
     repository: mahammadalii12/observe
-    tag: v4
+    tag: v5
   resources:
     requests:
       cpu: "100m"
