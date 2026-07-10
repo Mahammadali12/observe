@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: victoria-metrics-dashboard
-  namespace: default
-data:
-  victoria-metrics.json: {{ .Files.Get "files/victoria-metrics.json" | quote }}
