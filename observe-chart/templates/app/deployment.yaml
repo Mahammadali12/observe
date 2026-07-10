@@ -28,6 +28,8 @@ spec:
           value: http://otel-collector.default.svc.cluster.local:4317
         - name: OTEL_EXPORTER_OTLP_INSECURE
           value: "true"
+        - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+          value: http://otel-collector.default.svc.cluster.local:4318/v1/logs
         resources:
           requests:
             cpu: {{ .Values.app.resources.requests.cpu }}
