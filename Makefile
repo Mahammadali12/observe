@@ -25,7 +25,7 @@ release:
 	@echo "[2/4] Pushing Docker image..."
 	docker push $(IMAGE_REPO):$(TAG)
 	@echo "[3/4] Updating Helm chart source on master..."
-	sed -i '0,/^    tag: /s/^    tag: .*/    tag: $(TAG)/' $(CHART_DIR)/values.yaml
+	python3 -c "import re; f=open('$(CHART_DIR)/values.yaml'); c=f.read(); f.close(); lines=c.split(chr(10)); [lines.__setitem__(i, re.sub(r'tag:.*', 'tag: $(TAG)', lines[i])) for i in range(len(lines)) if i>0 and lines[i-1].strip() == 'repository: mahammadalii12/observe' and lines[i].strip().startswith('tag:')]; f=open('$(CHART_DIR)/values.yaml', 'w'); f.write(chr(10).join(lines)); f.close()"
 	git add $(CHART_DIR)/values.yaml
 	git commit -m 'chore: bump app image tag to $(TAG)' || true
 	git push origin master
