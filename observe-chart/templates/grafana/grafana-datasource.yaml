@@ -8,17 +8,31 @@ data:
     apiVersion: 1
     datasources:
       - name: VictoriaMetrics
+        uid: victoriametrics
         type: prometheus
         access: proxy
         url: http://victoria-metrics.default.svc.cluster.local:8428
         isDefault: true
         editable: false
       - name: VictoriaTraces
+        uid: victoriatraces
         type: jaeger
         access: proxy
         url: http://victoria-traces.default.svc.cluster.local:10428/select/jaeger
         editable: false
+        jsondata:
+          tracesToMetrics:
+            datasourceUid: victoriametrics
+            tags:
+              - key: 'service.name'
+                value: 'service'
+            queries:
+              - name: 'request rate for this service'
+                query: 'sum(rate(calls_total{service="$service"}[5m]))' 
+              - name: 'Error rate for this service'
+                query: 'sum(rate(calls_total{service="$service",status_code="STATUS_CODE_ERROR"}[5m]))'
       - name: VictoriaLogs
+        uid: victorialogs
         type: victoriametrics-logs-datasource
         access: proxy
         url: http://victoria-logs.default.svc.cluster.local:9428
