@@ -27,13 +27,14 @@ data:
         endpoint: 0.0.0.0:8889
 
     connectors:
-      spanmetrics:
+      span_metrics:
         histogram:
           explicit:
             buckets: [100us, 1ms, 2ms, 6ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1s, 5s]
         dimensions:
-          - name: http.method
-          - name: http.status_code
+          - name: http.request.method
+            default: GET
+          - name: http.response.status_code
         metrics_flush_interval: 15s
 
     service:
@@ -50,9 +51,9 @@ data:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [debug, otlphttp/victoriatraces, spanmetrics]
+          exporters: [debug, otlphttp/victoriatraces, span_metrics]
         metrics:
-          receivers: [otlp, spanmetrics]
+          receivers: [otlp, span_metrics]
           processors: [batch]
           exporters: [debug, prometheus]
         logs:
